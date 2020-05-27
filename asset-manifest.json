@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/book-meeting-app/static/css/main.06025fb1.chunk.css",
+    "main.js": "/book-meeting-app/static/js/main.cd46a540.chunk.js",
+    "main.js.map": "/book-meeting-app/static/js/main.cd46a540.chunk.js.map",
+    "runtime-main.js": "/book-meeting-app/static/js/runtime-main.318e37f6.js",
+    "runtime-main.js.map": "/book-meeting-app/static/js/runtime-main.318e37f6.js.map",
+    "static/css/2.c92686f8.chunk.css": "/book-meeting-app/static/css/2.c92686f8.chunk.css",
+    "static/js/2.df9bb108.chunk.js": "/book-meeting-app/static/js/2.df9bb108.chunk.js",
+    "static/js/2.df9bb108.chunk.js.map": "/book-meeting-app/static/js/2.df9bb108.chunk.js.map",
+    "index.html": "/book-meeting-app/index.html",
+    "precache-manifest.62532de6cd5289d94a44d2f65b533b15.js": "/book-meeting-app/precache-manifest.62532de6cd5289d94a44d2f65b533b15.js",
+    "service-worker.js": "/book-meeting-app/service-worker.js",
+    "static/css/2.c92686f8.chunk.css.map": "/book-meeting-app/static/css/2.c92686f8.chunk.css.map",
+    "static/css/main.06025fb1.chunk.css.map": "/book-meeting-app/static/css/main.06025fb1.chunk.css.map",
+    "static/js/2.df9bb108.chunk.js.LICENSE.txt": "/book-meeting-app/static/js/2.df9bb108.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.318e37f6.js",
+    "static/css/2.c92686f8.chunk.css",
+    "static/js/2.df9bb108.chunk.js",
+    "static/css/main.06025fb1.chunk.css",
+    "static/js/main.cd46a540.chunk.js"
+  ]
+}
