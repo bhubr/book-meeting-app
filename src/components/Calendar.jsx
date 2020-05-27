@@ -70,10 +70,10 @@ function MonthView({ dowStart, currentMonth, renderDay, isDisabled, selectedDate
   }
   return (
     <div>
-      <div className="Calendar__row" key="header-row">
+      <div className="Calendar__row columns" key="header-row">
         {
           new Array(7).fill(0).map((d, i) => (
-            <div key={`header-cell-${i}`} className="Calendar__cell Calendar__cell--header">
+            <div key={`header-cell-${i}`} className="Calendar__cell Calendar__cell--header column">
               {dayLabels[i]}
             </div>
           ))
@@ -81,12 +81,12 @@ function MonthView({ dowStart, currentMonth, renderDay, isDisabled, selectedDate
       </div>
       {
         rows.map((cells, ri) => (
-          <div className="Calendar__row" key={`row-${ri}`}>
+          <div className="Calendar__row columns" key={`row-${ri}`}>
           {
             cells.map((date, ci) => (
               <div
                 key={`cell-${ri}-${ci}`}
-                className={classNames('Calendar__cell', { empty: !date, 'Calendar__cell--today': date && areDateEqual(date, today), 'Calendar__cell--selected': date  && areDateEqual(date, selectedDate), 'Calendar__cell--disabled': !date || isDisabled(date) })}
+                className={classNames('Calendar__cell', 'column', { empty: !date, 'Calendar__cell--today': date && areDateEqual(date, today), 'Calendar__cell--selected': date  && areDateEqual(date, selectedDate), 'Calendar__cell--disabled': !date || isDisabled(date) })}
                 onClick={() => date && !isDisabled(date) && onSelectDate(date)}
               >
               {date ? renderDay(date) : <span>&nbsp;</span>}

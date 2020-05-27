@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import firebase from 'firebase';
-import './index.css';
+import 'bulma/css/bulma.min.css';
+import '@creativebulma/bulma-badge/dist/bulma-badge.min.css';
 import App from './App';
 import firebaseConfig from './firebase-config';
 import * as serviceWorker from './serviceWorker';

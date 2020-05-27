@@ -1,21 +1,22 @@
 .Calendar__cell {
   text-align: center;
-  padding: 12px 8px;
-  width: 48px;
+  padding: 8px 4px;
   display: inline-block;
   box-sizing: border-box;
-  border: 1px solid #eee;
+  position: relative;
 }
 
 .Calendar__cell--header {
   background: #f4f4f4;
+  font-weight: bold;
 }
 
 .Calendar__monthSelector {
   display: flex;
   width: 100%;
-  padding: 0.5em 0.25em;
+  padding: 1em 0.25em;
   box-sizing: border-box;
+  align-items: center;
 }
 
 .Calendar__monthSelector__value {
@@ -54,4 +55,9 @@
 .Calendar__cell--selected {
   background: #367;
   color: #fff;
+}
+
+.Calendar__day {
+  position: relative;
+  padding: 3px;
 }

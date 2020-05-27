@@ -2,9 +2,15 @@ import React, { useState, useEffect } from 'react';
 import firebase from 'firebase';
 import classNames from 'classnames';
 import Calendar from './components/Calendar';
+import Navbar from './components/Navbar';
 import './App.css';
 
+const availableSlots = [
+  '09:20', '10:10', '14:10', '15:00', '15:50', '16:40'
+];
+
 function App() {
+  const [isReady, setIsReady] = useState(false);
   const [currentUser, setUser] = useState(null);
   const [token, setToken] = useState('');
   const [slots, setSlots] = useState([]);
@@ -19,10 +25,10 @@ function App() {
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(function(user) {
-      if (!user) {
-        return;
+      if (user) {
+        setUser(user);
       }
-      setUser(user);
+      setIsReady(true);
     });
 
     const slotsRef = firebase.database().ref('slots');
@@ -63,11 +69,22 @@ function App() {
     });
     
   };
+  const numFreeSlots = (date) => {
+    const dateVal = date.toISOString().substr(0, 10);
+    const bookedSlots = slots.filter(({ date }) => date === dateVal);
+    return availableSlots.length - bookedSlots.length;
+  };
   const isBooked = (slot) => {
     const selectedDateVal = selectedDate.toISOString().substr(0, 10);
     const bookedSlot = slots.find(({ date, time }) => date === selectedDateVal && time === slot);
     console.log(slot, bookedSlot);
     return !!bookedSlot;
+  };
+  const isDateDisabled = date => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return date.getDay() !== 3 || date.getTime() < today.getTime();
   };
   const confirmSlot = (time) => {
     const newSlotKey = firebase.database().ref().child('slots').push().key;
@@ -83,46 +100,70 @@ function App() {
 
     return firebase.database().ref().update(updates);
   };
-  let content;
-  if (!currentUser) {
-    content = (
-      <button onClick={onClickAuth}>S&apos;authentifier avec Google</button>
+  if (!isReady) {
+    return (
+      <div className="Login__container">
+        <span class="icon-spinner" />
+      </div>
     );
   }
-  else {
-    const availableSlots = [
-      '09:20', '10:10', '14:10', '15:00', '15:50', '16:40'
-    ];
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    content = (
-      <>
-        <nav>
-          <button onClick={onLogout}>Déconnexion</button>
-        </nav>
-        <Calendar
-          isDisabled={date => date.getDay() !== 3 || date.getTime() < today.getTime()}
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
-        />
-        {
-          selectedDate && availableSlots.map(slot => (
-            <div
-              key={slot}
-              className={classNames('Meeting__slot', { 'Meeting__slot--booked': isBooked(slot) })}
-              onClick={() => !isBooked(slot) && window.confirm('Réserver ce créneau ?') && confirmSlot(slot)}
-            >
-              {slot}
-            </div>
-          ))
-        }
-        
-      </>
+  if (!currentUser) {
+    return (
+      <div className="Login__container">
+        <button className="button is-danger" onClick={onClickAuth}>
+          <span class="icon-google" />
+          S&apos;authentifier avec Google
+        </button>
+      </div>
     );
   }
   return (
     <div className="App">
-      {content}
+      <Navbar onLogout={onLogout} />
+      <div className="columns">
+        <div className="column">
+          <div className="card">
+            <div className="card-content">
+              <Calendar
+                isDisabled={isDateDisabled}
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+                renderDay={
+                  (date) => (
+                    <span className="Calendar__day">
+                      {
+                        !isDateDisabled(date) && numFreeSlots(date) > 0 && <span class="badge">{numFreeSlots(date)}</span>
+                      }
+                      {date.getDate()}
+                    </span>
+                  )
+                }
+              />
+            </div>
+          </div>
+        </div>
+        <div className="column">
+          {
+            selectedDate
+            ? availableSlots.map(slot => (
+              <div
+                key={slot}
+                className={classNames('Meeting__slot', 'card', { 'Meeting__slot--booked': isBooked(slot) })}
+                onClick={() => !isBooked(slot) && window.confirm('Réserver ce créneau ?') && confirmSlot(slot)}
+              >
+                <div className="card-content Meeting__slot__content">{slot}</div>
+              </div>
+            ))
+            : (
+              <div className="card">
+                <div className="card-content">
+                  Veuillez choisir une date dans le calendrier <span role="img">😊</span>
+                </div>
+              </div>
+            )
+          }
+        </div>
+      </div>
     </div>
   );
 }

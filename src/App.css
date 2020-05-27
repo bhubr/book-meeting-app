@@ -3,7 +3,53 @@
   max-width: 800px;
 }
 
+.navbar {
+  margin-bottom: 3em;
+}
+
+@keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+.icon-spinner {
+  font-size: 2.5em;
+  animation: rotating 1s linear infinite;
+}
+
+.Login__container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Login__container .icon-google {
+  margin-right: 1em;
+}
+
 .Meeting__slot--booked {
   color: #eee;
   text-decoration: line-through;
+}
+
+.Meeting__slot {
+  margin-bottom: 1em;
+  box-shadow: 0 0.5em 1em -0.125em rgba(0, 0, 0, 0.05), 0 0px 0 1px rgba(0, 0, 0, 0.01);
+}
+
+.Meeting__slot__content {
+  text-align: center;
+  padding: 0.5em 0;
 }
