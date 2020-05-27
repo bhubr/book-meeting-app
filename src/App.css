@@ -40,8 +40,12 @@
 }
 
 .Meeting__slot--booked {
-  color: #eee;
+  color: #ccc;
   text-decoration: line-through;
+}
+.Meeting__slot--isMine {
+  font-weight: bold;
+  color: #7d7;
 }
 
 .Meeting__slot {

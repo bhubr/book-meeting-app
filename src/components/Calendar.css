@@ -1,3 +1,4 @@
+.Calendar__cell--header,
 .Calendar__cell {
   text-align: center;
   padding: 8px 4px;
@@ -14,7 +15,8 @@
 .Calendar__monthSelector {
   display: flex;
   width: 100%;
-  padding: 1em 0.25em;
+  padding: 0.25em;
+  margin-bottom: 1.5em;
   box-sizing: border-box;
   align-items: center;
 }
@@ -30,10 +32,6 @@
 
 .Calendar__monthSelector__nav:hover {
   color: #000;
-}
-
-.Calendar__monthChoice--current {
-  background-color: aqua;
 }
 
 .Calendar {

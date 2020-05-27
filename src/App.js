@@ -3,6 +3,7 @@ import firebase from 'firebase';
 import classNames from 'classnames';
 import Calendar from './components/Calendar';
 import Navbar from './components/Navbar';
+import ChooseDateParagraph from './components/ChooseDateParagraph';
 import './App.css';
 
 const availableSlots = [
@@ -11,6 +12,7 @@ const availableSlots = [
 
 function App() {
   const [isReady, setIsReady] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [currentUser, setUser] = useState(null);
   const [token, setToken] = useState('');
   const [slots, setSlots] = useState([]);
@@ -19,7 +21,7 @@ function App() {
   const onReceiveSlots = (data) => {
     const value = data.val();
     if (!value) return;
-    const nextSlots = Object.values(value).map(({ uid, ...rest }) => rest);
+    const nextSlots = Object.values(value);
     setSlots(nextSlots);
   };
 
@@ -30,42 +32,40 @@ function App() {
       }
       setIsReady(true);
     });
-
     const slotsRef = firebase.database().ref('slots');
     slotsRef.on('value', onReceiveSlots);
-    
   }, []);
+
+  useEffect(() => {
+    if (currentUser) {
+      const userRef = firebase.database().ref(`users/${currentUser.uid}`);
+      userRef.on('value', (data) => {
+        const value = data.val();
+        if (!value) return;
+        const { admin } = JSON.parse(value);
+        if (admin) setIsAdmin(true);
+      });
+    }
+  }, [currentUser]);
 
   const onLogout = () => firebase.auth().signOut()
     .then(function() {
       setUser(null);
     })
     .catch(function(error) {
-      // An error happened
+      alert(error.message);
     });
 
   const onClickAuth = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
-    // provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
     firebase.auth().languageCode = 'fr';
     firebase.auth().signInWithPopup(provider).then(function(result) {
-      // This gives you a Google Access Token. You can use it to access the Google API.
       const token = result.credential.accessToken;
-      // The signed-in user info.
       const user = result.user;
       setToken(token);
       setUser(user);
-      // ...
     }).catch(function(error) {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // The email of the user's account used.
-      const email = error.email;
-      // The firebase.auth.AuthCredential type that was used.
-      const credential = error.credential;
-      // ...
-      console.error(error);
+      alert(error.message);
     });
     
   };
@@ -74,11 +74,9 @@ function App() {
     const bookedSlots = slots.filter(({ date }) => date === dateVal);
     return availableSlots.length - bookedSlots.length;
   };
-  const isBooked = (slot) => {
+  const getBookedSlot = (slot) => {
     const selectedDateVal = selectedDate.toISOString().substr(0, 10);
-    const bookedSlot = slots.find(({ date, time }) => date === selectedDateVal && time === slot);
-    console.log(slot, bookedSlot);
-    return !!bookedSlot;
+    return slots.find(({ date, time }) => date === selectedDateVal && time === slot);
   };
   const isDateDisabled = date => {
     const today = new Date();
@@ -88,11 +86,10 @@ function App() {
   };
   const confirmSlot = (time) => {
     const newSlotKey = firebase.database().ref().child('slots').push().key;
+    const { uid, email, displayName: name } = currentUser;
+    const date = selectedDate.toISOString().substr(0, 10);
     const slotData = {
-      uid: currentUser.uid,
-      name: currentUser.displayName,
-      date: selectedDate.toISOString().substr(0, 10),
-      time,
+      uid, name, email, date, time,
     };
     // Write the new post's data simultaneously in the posts list and the user's post list.
     const updates = {};
@@ -100,10 +97,26 @@ function App() {
 
     return firebase.database().ref().update(updates);
   };
+  const onBookSlot = (slot, bookedSlot) => {
+    // Don't allow to book if already booked
+    if (bookedSlot) return;
+    // Look up booked slots for current user
+    const dateVal = selectedDate.toISOString().substr(0, 10);
+    const bookedSlots = slots.filter(
+      ({ uid, date }) => (uid === currentUser.uid && date === dateVal)
+    );
+    if (bookedSlots.length) {
+      alert('Vous avez déjà réservé un créneau pour ce jour !');
+      return;
+    }
+    if (window.confirm('Réserver ce créneau ?')) {
+      confirmSlot(slot);
+    }
+  };
   if (!isReady) {
     return (
       <div className="Login__container">
-        <span class="icon-spinner" />
+        <span className="icon-spinner" />
       </div>
     );
   }
@@ -111,7 +124,7 @@ function App() {
     return (
       <div className="Login__container">
         <button className="button is-danger" onClick={onClickAuth}>
-          <span class="icon-google" />
+          <span className="icon-google" />
           S&apos;authentifier avec Google
         </button>
       </div>
@@ -132,7 +145,7 @@ function App() {
                   (date) => (
                     <span className="Calendar__day">
                       {
-                        !isDateDisabled(date) && numFreeSlots(date) > 0 && <span class="badge">{numFreeSlots(date)}</span>
+                        !isDateDisabled(date) && numFreeSlots(date) > 0 && <span className="badge">{numFreeSlots(date)}</span>
                       }
                       {date.getDate()}
                     </span>
@@ -145,22 +158,33 @@ function App() {
         <div className="column">
           {
             selectedDate
-            ? availableSlots.map(slot => (
-              <div
-                key={slot}
-                className={classNames('Meeting__slot', 'card', { 'Meeting__slot--booked': isBooked(slot) })}
-                onClick={() => !isBooked(slot) && window.confirm('Réserver ce créneau ?') && confirmSlot(slot)}
-              >
-                <div className="card-content Meeting__slot__content">{slot}</div>
-              </div>
-            ))
-            : (
-              <div className="card">
-                <div className="card-content">
-                  Veuillez choisir une date dans le calendrier <span role="img">😊</span>
+            ? availableSlots.map(time => {
+              const bookedSlot = getBookedSlot(time);
+              const isBookedByMe = bookedSlot && bookedSlot.uid === currentUser.uid;
+              const innerContent = bookedSlot
+                ? (
+                  <span>
+                    <span
+                      className={classNames({ 'Meeting__slot--booked': !isBookedByMe, 'Meeting__slot--isMine': isBookedByMe })}
+                    >{bookedSlot.time}</span>
+                    {' '}
+                    {
+                      isAdmin && <a href={`mailto:${bookedSlot.email}`}>{bookedSlot.name}</a>
+                    }
+                  </span>
+                )
+                : time;
+              return (
+                <div
+                  key={time}
+                  className={classNames('Meeting__slot', 'card')}
+                  onClick={() => onBookSlot(time, bookedSlot)}
+                >
+                  <div className="card-content Meeting__slot__content">{innerContent}</div>
                 </div>
-              </div>
-            )
+              );
+            })
+            : <ChooseDateParagraph />
           }
         </div>
       </div>

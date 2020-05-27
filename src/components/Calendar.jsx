@@ -73,7 +73,7 @@ function MonthView({ dowStart, currentMonth, renderDay, isDisabled, selectedDate
       <div className="Calendar__row columns" key="header-row">
         {
           new Array(7).fill(0).map((d, i) => (
-            <div key={`header-cell-${i}`} className="Calendar__cell Calendar__cell--header column">
+            <div key={`header-cell-${i}`} className="Calendar__cell--header column">
               {dayLabels[i]}
             </div>
           ))
