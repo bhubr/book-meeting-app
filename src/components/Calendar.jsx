@@ -9,7 +9,23 @@ const monthLabels = [
   'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
 ];
 
-function MonthView({ dowStart, currentMonth }) {
+const areDateEqual = (date1, date2) => {
+  if (!date1 || !date2) return false;
+  const dy = date1.getYear();
+  const ty = date2.getYear();
+  if (dy !== ty) return false;
+
+  const dm = date1.getMonth();
+  const tm = date2.getMonth();
+  if (dm !== tm) return false;
+
+  const dd = date1.getDate();
+  const td = date2.getDate();
+  return dd === td;
+}
+
+function MonthView({ dowStart, currentMonth, renderDay, isDisabled, selectedDate, onSelectDate }) {
+  const today = new Date();
   const thisMonth = currentMonth;
   let month = thisMonth;
   let day = 1;
@@ -70,9 +86,10 @@ function MonthView({ dowStart, currentMonth }) {
             cells.map((date, ci) => (
               <div
                 key={`cell-${ri}-${ci}`}
-                className={classNames('Calendar__cell', { empty: !date })}
+                className={classNames('Calendar__cell', { empty: !date, 'Calendar__cell--today': date && areDateEqual(date, today), 'Calendar__cell--selected': date  && areDateEqual(date, selectedDate), 'Calendar__cell--disabled': !date || isDisabled(date) })}
+                onClick={() => date && !isDisabled(date) && onSelectDate(date)}
               >
-              {date ? date.getDate() : <span>&nbsp;</span>}
+              {date ? renderDay(date) : <span>&nbsp;</span>}
               </div>
             ))
           }
@@ -87,7 +104,7 @@ MonthView.defaultProps = {
   dowStart: 1,
 };
 
-function Calendar() {
+function Calendar({ renderDay, isDisabled, selectedDate, setSelectedDate }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getYear() + 1900;
@@ -127,9 +144,21 @@ function Calendar() {
       </div>
       <MonthView
         currentMonth={currentMonth}
+        renderDay={renderDay}
+        isDisabled={isDisabled}
+        selectedDate={selectedDate}
+        onSelectDate={setSelectedDate}
       />
     </div>
   )
 }
+
+const defaultRenderDay = (date) => (
+  <span className="Calendar__day">{date.getDate()}</span>
+);
+
+Calendar.defaultProps = {
+  renderDay: defaultRenderDay,
+};
 
 export default Calendar;

@@ -38,3 +38,20 @@
 .Calendar {
   width: 336px;
 }
+
+.Calendar__cell--disabled {
+  color: #bbb;
+}
+
+.Calendar__cell--today {
+  background: #cff8ff;
+}
+
+.Calendar__cell:not(.Calendar__cell--disabled):hover {
+  background: #bef;
+}
+
+.Calendar__cell--selected {
+  background: #367;
+  color: #fff;
+}

@@ -2,3 +2,8 @@
   margin: 0 auto;
   max-width: 800px;
 }
+
+.Meeting__slot--booked {
+  color: #eee;
+  text-decoration: line-through;
+}
