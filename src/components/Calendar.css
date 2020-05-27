@@ -1,7 +1,32 @@
 .Calendar__cell {
-  padding: 10px;
-  width: 30px;
-  height: 30px;
+  text-align: center;
+  padding: 12px 8px;
+  width: 48px;
   display: inline-block;
+  box-sizing: border-box;
   border: 1px solid #eee;
+}
+
+.Calendar__cell--header {
+  background: #f4f4f4;
+}
+
+.Calendar__monthSelector {
+  display: flex;
+  width: 100%;
+  padding: 0.25em;
+  box-sizing: border-box;
+}
+
+.Calendar__monthSelector__value {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.Calendar__monthChoice--current {
+  background-color: aqua;
+}
+
+.Calendar {
+  width: 336px;
 }
