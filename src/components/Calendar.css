@@ -1,0 +1,7 @@
+.Calendar__cell {
+  padding: 10px;
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  border: 1px solid #eee;
+}
