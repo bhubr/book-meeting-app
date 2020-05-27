@@ -121,9 +121,9 @@ function Calendar() {
   return (
     <div className="Calendar">
       <div className="Calendar__monthSelector">
-        <span className="icon-chevron-left" onClick={decrementDate} />
+        <span className="Calendar__monthSelector__nav icon-chevron-left" onClick={decrementDate} />
         <span className="Calendar__monthSelector__value">{monthLabels[currentMonth]} {currentYear}</span>
-        <span className="icon-chevron-right" onClick={incrementDate} />
+        <span className="Calendar__monthSelector__nav icon-chevron-right" onClick={incrementDate} />
       </div>
       <MonthView
         currentMonth={currentMonth}
